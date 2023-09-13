@@ -1,45 +1,14 @@
-from flask import Flask
+from flask import Flask, redirect
 app=Flask(__name__)
 
 @app.route("/")
 def slesh():
-    return """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>НГТУ, ФБ, Лабораторные работы</title>
-    </head>
-    <body>
-        <header>
-            НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
-        </header>
-        <h2><a href="/lab1" target="_blank">Первая лабораторная</a></h2>
-        <footer>
-            &copy; Туняк Андрей, ФБИ-13, 3 курс, 2023
-        </footer>
-    </body>
-</html>
-"""
+     return redirect('/menu', code=302)
 
 @app.route("/index")
 def start():
-    return """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>НГТУ, ФБ, Лабораторные работы</title>
-    </head>
-    <body>
-        <header>
-            НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
-        </header>
-        <h2><a href="/lab1" target="_blank">Первая лабораторная</a></h2>
-        <footer>
-            &copy; Туняк Андрей, ФБИ-13, 3 курс, 2023
-        </footer>
-    </body>
-</html>
-"""
+    return redirect('/menu', code=302)
+
 
 @app.route('/lab1')
 def lab1():
@@ -51,8 +20,9 @@ def lab1():
     </head>
     <body>
         <header>
-            НГТУ, ФБ, Лабораторная работа 1
+            Лабораторная работа 1
         </header>
+
         <h1>
             Flask — фреймворк для создания веб-приложений на языке
             программирования Python, использующий набор инструментов
@@ -60,6 +30,27 @@ def lab1():
             называемых микрофреймворков — минималистичных каркасов
             веб-приложений, сознательно предоставляющих лишь самые базовые возможности.         
         </h1>
+
+        <footer>
+            &copy; Туняк Андрей, ФБИ-13, 3 курс, 2023
+        </footer>
+    </body>
+</html>
+"""
+
+@app.route("/menu")
+def menu():
+    return """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>НГТУ, ФБ, Лабораторные работы</title>
+    </head>
+    <body>
+        <header>
+            НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
+        </header>
+        <h2><a href="/lab1" target="_blank">Первая лабораторная</a></h2>
         <footer>
             &copy; Туняк Андрей, ФБИ-13, 3 курс, 2023
         </footer>
