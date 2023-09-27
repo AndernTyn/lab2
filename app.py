@@ -197,4 +197,7 @@ def car():
 @app.route('/lab2/example')
 def example():
     name='Туняк Андрей'
-    return render_template('example.html', name=name)
+    number='2'
+    groupe='ФБИ-13'
+    course='3'
+    return render_template('example.html', name=name, number=number, groupe=groupe, course=course)
