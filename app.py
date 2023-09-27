@@ -194,9 +194,13 @@ def car():
 </html>
 '''
 
+@app.route('/lab2')
+def lab2():
+    return render_template('lab2.html')
+
 @app.route('/lab2/example')
 def example():
-        name, number, groupe, course='Егор Панченко', 2, 'ФБИ-13', '3 курс'
+        name, number, groupe, course='Туняк Андрей', 2, 'ФБИ-13', '3 курс'
         fruits = [
             {'name': 'яблоки', 'price': 100},
             {'name': 'груши', 'price': 120},
