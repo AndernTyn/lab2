@@ -221,3 +221,7 @@ def example():
         {'author': 'Кнаусгор К.', 'name': 'Моя борьба', 'genre': 'биография', 'pages': '3600'},
         ]
         return render_template('example.html', name=name, number=number, groupe=groupe, course=course, fruits=fruits, books=books)
+
+@app.route('/lab2/vaz')
+def vaz():
+    return render_template('vaz.html')
