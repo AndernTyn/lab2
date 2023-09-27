@@ -1,4 +1,7 @@
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template
+# пакет и класс 
+# хранит имя программы
+# возвращает нужный нам путь в виде строки.
 app=Flask(__name__)
 
 @app.route("/")
@@ -9,7 +12,7 @@ def slesh():
 def start():
     return redirect('/menu', code=302)
 
-
+# многострочные строчки
 @app.route('/lab1')
 def lab1():
     return '''
@@ -190,3 +193,7 @@ def car():
     </body>
 </html>
 '''
+
+@app.route('/lab2/example')
+def example():
+    return render_template('example.html')
