@@ -64,12 +64,14 @@ def menu():
     <head>
         <title>НГТУ, ФБ, Лабораторные работы</title>
         <link rel="stylesheet" href="''' + url_for('static', filename='lab1.css') + '''">
+                
     </head>
     <body>
         <header>
             НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
         </header>
         <h2><a href="/lab1" target="_blank">Первая лабораторная</a></h2>
+        <h2><a href="/lab2" target="_blank">Вторая лабораторная</a></h2>
 
         <footer>
             &copy; Туняк Андрей, ФБИ-13, 3 курс, 2023
