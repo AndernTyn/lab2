@@ -20,7 +20,6 @@ def lab1():
         <link rel="stylesheet" href="''' + url_for('static', filename='lab1.css') + '''">
     </head>
 
-    
     <body>
         <header>
             Лабораторная работа 1
