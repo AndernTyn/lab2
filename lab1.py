@@ -76,6 +76,7 @@ def menu():
         </header>
         <h2><a href="/lab1" target="_blank">Первая лабораторная</a></h2>
         <h2><a href="/lab2" target="_blank">Вторая лабораторная</a></h2>
+        <h2><a href="/lab3">Третья лабораторная</a></h2>
 
         <footer>
             &copy; Туняк Андрей, ФБИ-13, 3 курс, 2023
