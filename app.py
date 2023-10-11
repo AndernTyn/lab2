@@ -4,7 +4,8 @@ from lab2 import lab2
 from lab3 import lab3
 # пакет и класс 
 # хранит имя программы
-# возвращает нужный нам путь в виде строки.
+# возвращает нужный нам путь в виде строки
+# отвечает за рендеринг шаблонов
 app=Flask(__name__)
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
