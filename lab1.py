@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, url_for
+from flask import Blueprint, redirect, url_for, render_template
 # пакет и класс 
 # хранит имя программы
 # возвращает нужный нам путь в виде строки.
@@ -77,6 +77,7 @@ def menu():
         <h2><a href="/lab1" target="_blank">Первая лабораторная</a></h2>
         <h2><a href="/lab2" target="_blank">Вторая лабораторная</a></h2>
         <h2><a href="/lab3">Третья лабораторная</a></h2>
+        <h2><a href="/lab4">Лабораторная 4</a></h2>
 
         <footer>
             &copy; Туняк Андрей, ФБИ-13, 3 курс, 2023
