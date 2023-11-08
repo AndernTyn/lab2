@@ -2,6 +2,7 @@ from flask import Blueprint, redirect, url_for, render_template
 # пакет и класс 
 # хранит имя программы
 # возвращает нужный нам путь в виде строки.
+# отвечает за рендеринг шаблонов
 lab2=Blueprint('lab2', __name__)
 
 
