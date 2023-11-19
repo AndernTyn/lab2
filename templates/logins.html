@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Логин</h1>
+    <form method="post" action="/lab5/logins">
+        <label for="username">Имя пользователя:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Войти</button>
+    </form>
+    {% if errors %}
+        <p style="color: red;">{{ errors[0] }}</p>
+    {% endif %}
+    <br>
+    <p>Don't have an account? <a href="{{ url_for('lab5.registerPage') }}">Register here</a></p>
+    <div>
+        <a href="/lab5">
+            <button >Вернуться назад</button>
+        </a>
+        </div>
+</body>
+</html>
