@@ -1,12 +1,72 @@
-<!-- Ваш полный код с поправками -->
 {% extends "base.html" %}
 
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
-    <body>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .articles-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p {
+            text-align: center;
+            margin-top: 10px;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+
+    <div class="articles-container">
+        <h1>Список статей</h1>
         {% if user_is_authenticated %}
-            <p>Добро пожаловать, {{ current_user.username }}!</p>
             {% if articles %}
                 <table>
                     <thead>
@@ -15,7 +75,7 @@
                             <th>Ссылка на статью</th>
                             <th>Лайки</th>
                             <th>Добавить в избранное</th>
-                            <th>Поставить лайк</th> <!-- Добавлено -->
+                            <th>Поставить лайк</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,11 +93,9 @@
             {% else %}
                 <p>У вас пока нет статей.</p>
             {% endif %}
-            <a href="/lab5">
-                <button>Вернуться назад</button>
-            </a>
+            <p><a href="/lab5"><button>Вернуться назад</button></a></p>
         {% else %}
             <p>Пожалуйста, войдите, чтобы просмотреть свои статьи.</p>
         {% endif %}
-    </body>
+    </div>
 {% endblock %}

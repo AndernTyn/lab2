@@ -3,20 +3,79 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
-<div>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .new-note-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    p {
+        text-align: center;
+        margin-top: 10px;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+    label {
+        margin-bottom: 5px;
+    }
+    input, textarea {
+        padding: 8px;
+        margin-bottom: 50px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    button {
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .back-link a {
+        text-decoration: none;
+        color: #007bff;
+    }
+</style>
+
+<div class="new-note-container">
     <h1>Новая заметка</h1>
     {% if sent %}
-        <p>Отправлено!</p>
+        <p class="success-message">Отправлено!</p>
     {% endif %}
     <form method="POST">
-        <div><input name='title_article' type='text' placeholder="Название статьи"></div>
-        <div><textarea name="text_article" placeholder="Текст статьи" rows="20"></textarea></div>
-        <div><input type="submit" value="Apply"></div>
+        <div><label for="title">Название статьи:</label></div>
+        <div><input name='title_article' type='text' placeholder="Введите название" required></div>
+        <div><label for="text">Текст статьи:</label></div>
+        <div><textarea name="text_article" placeholder="Введите текст" rows="20" required></textarea></div>
+        <div><input type="submit" value="Применить"></div>
     </form>
 </div>
-<div>
-    <a href="/lab5">
-        <button >Вернуться назад</button>
-    </a>
-    </div>
+<div class="back-link">
+    <p><a href="/lab5">Вернуться назад</a></p>
+</div>
 {% endblock %}

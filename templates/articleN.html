@@ -3,10 +3,14 @@
 {% block lab %}Лабораторная работа 5{% endblock %}
 
 {% block main %}
+<!-- Основная часть страницы для отображения статьи -->
 <div>
+    <!-- Заголовок статьи -->
     <h1>{{ article_title }}</h1>
+    
+    <!-- Цикл для вывода каждого абзаца статьи -->
     {% for paragraph in article_text %}
-    <p>{{ paragraph }}</p>
+        <p>{{ paragraph }}</p>
     {% endfor %}
 </div>
 {% endblock %}

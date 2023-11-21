@@ -5,27 +5,87 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+        }
+        input {
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+        p {
+            text-align: center;
+            margin-top: 10px;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
-    <h1>Логин</h1>
-    <form method="post" action="/lab5/logins">
-        <label for="username">Имя пользователя:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Пароль:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <button type="submit">Войти</button>
-    </form>
-    {% if errors %}
-        <p style="color: red;">{{ errors[0] }}</p>
-    {% endif %}
-    <br>
-    <p>Don't have an account? <a href="{{ url_for('lab5.registerPage') }}">Register here</a></p>
-    <div>
+    <div class="login-container">
+        <h1>Логин</h1>
+        <form method="post" action="/lab5/logins">
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Войти</button>
+        </form>
+        
+        {% if errors %}
+            <p class="error-message">{{ errors[0] }}</p>
+        {% endif %}
+        
+        <p>Нет аккаунта? <a href="{{ url_for('lab5.registerPage') }}">Зарегистрируйтесь здесь</a></p>
         <a href="/lab5">
-            <button >Вернуться назад</button>
+            <button>Вернуться назад</button>
         </a>
-        </div>
+    </div>
+    
 </body>
 </html>
