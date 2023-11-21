@@ -42,7 +42,6 @@ def main():
 
     return render_template("lab5.html", user_is_authenticated=user_is_authenticated, current_user=current_user)
 
-# Маршрут для вывода имен пользователей в HTML
 @lab5.route("/lab5/users")
 def show_users():
     conn = dbConnect()
@@ -258,9 +257,18 @@ def like_article(article_id):
     cur = conn.cursor()
 
     try:
-        cur.execute("UPDATE articles SET likes = likes + 1 WHERE id = %s;", (article_id,))
-        conn.commit()
+        # Проверяем, поставил ли пользователь лайк ранее
+        cur.execute("SELECT likes FROM articles WHERE id = %s AND user_id = %s;", (article_id, user_id))
+        previous_likes = cur.fetchone()
+
+        if previous_likes is not None and previous_likes[0] is not None:
+            # Пользователь уже поставил лайк
+            return redirect('/lab5')  # Можете перенаправить на другую страницу или оставить без изменений
+        else:
+            # Увеличиваем количество лайков
+            cur.execute("UPDATE articles SET likes = COALESCE(likes, 0) + 1 WHERE id = %s;", (article_id,))
+            conn.commit()
     finally:
         dbClose(cur, conn)
 
-    return redirect('/lab5')
+    return redirect('/lab5/my_articles')
