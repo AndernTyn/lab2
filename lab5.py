@@ -1,5 +1,5 @@
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask import Blueprint, redirect, url_for, render_template, request, session
+from flask import Blueprint, redirect, render_template, request, session
 import psycopg2
 
 # Создаем Blueprint с именем "lab5"
@@ -11,12 +11,25 @@ def dbConnect():
         host="127.0.0.1",
         database="knowledge_base_for_tunyak",
         user="tunyak_knowledge_base",
-        password="123")
+        password="123"
+    )
     return conn
 
 def dbClose(cursor, connection):
     cursor.close()
     connection.close()
+
+# Добавленная функция для проверки разрешений пользователя
+def user_has_permission_to_create_article(user_id):
+    conn = dbConnect()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("SELECT id FROM users WHERE id = %s", (user_id,))
+        result = cur.fetchone()
+        return result is not None
+    finally:
+        dbClose(cur, conn)
 
 # Маршрут для вывода всех пользователей в консоль
 @lab5.route("/lab5")
@@ -25,7 +38,6 @@ def main():
     current_user = {"username": "Гость"}
 
     if user_is_authenticated:
-        # Если пользователь аутентифицирован, получите его имя из сессии
         current_user["username"] = session["username"]
 
     return render_template("lab5.html", user_is_authenticated=user_is_authenticated, current_user=current_user)
@@ -33,42 +45,28 @@ def main():
 # Маршрут для вывода имен пользователей в HTML
 @lab5.route("/lab5/users")
 def show_users():
-    # Устанавливаем соединение с базой данных
     conn = dbConnect()
-
-    # Создаем курсор для выполнения SQL-запросов
     cur = conn.cursor()
-
-    # Выполняем запрос к базе данных для получения всех пользователей
     cur.execute("SELECT * FROM users;")
 
-    # Получаем все строки с результатами запроса
     result = cur.fetchall()
 
-    # Закрываем курсор и соединение с базой данных
     dbClose(cur, conn)
 
-    # Рендерим HTML-шаблон "users.html" с данными пользователей
     return render_template("users.html", users=result)
 
 @lab5.route('/lab5/register', methods=["GET", "POST"])
 def registerPage():
     errors = []
 
-    # Если это метод GET, то вернуть шаблон и завершить выполнение
     if request.method == "GET":
         return render_template("register.html", errors=errors)
 
-    # Если мы попали сюда, значит это метод POST, так как GET мы уже обработали и сделали return.
-    # После return функция немедленно завершается
     username = request.form.get("username")
     password = request.form.get("password")
 
-    # Проверяем username и password на пустоту
-    # Если любой из них пустой, то добавляем ошибку и рендерим шаблон
     if not (username and password):
         errors.append("Пожалуйста, заполните все поля")
-        print(errors)
         return render_template("register.html", errors=errors)
 
     hashPassword = generate_password_hash(password)
@@ -84,11 +82,7 @@ def registerPage():
         cur.close()
         return render_template("register.html", errors=errors)
 
-    # Если мы попали сюда, то значит в cur.fetchone нет ни одной строки
-    # значит пользователя с таким же логином не существует
     cur.execute("INSERT INTO users (username, password) VALUES (%s, %s);", (username, hashPassword))
-
-    # Делаем commit - т.е. фиксируем изменения
     conn.commit()
     conn.close()
     cur.close()
@@ -96,7 +90,7 @@ def registerPage():
     return redirect("/lab5/logins")
 
 @lab5.route('/lab5/logins', methods=["GET", "POST"])
-def loginsPage():
+def loginPage():
     errors = []
 
     if request.method == "GET":
@@ -105,37 +99,168 @@ def loginsPage():
     username = request.form.get("username")
     password = request.form.get("password")
 
-    if not (username and password):
+    if not (username or password):
         errors.append("Пожалуйста, заполните все поля")
         return render_template("logins.html", errors=errors)
 
-    conn = dbConnect()
-    cur = conn.cursor()
-    cur.execute("SELECT id, password FROM users WHERE username = %s", (username,))
+    with dbConnect() as conn, conn.cursor() as cur:
+        try:
+            cur.execute("SELECT id, password FROM users WHERE username = %s", (username,))
+            result = cur.fetchone()
 
-    result = cur.fetchone()
-    if result is None:
-        errors.append("Неправильный логин или пароль")
-        dbClose(cur, conn)
-        return render_template("logins.html", errors=errors)
+            if result is None:
+                errors.append("Неправильный логин или пароль")
+                return render_template("logins.html", errors=errors)
 
-    userID, hashPassword = result
+            userID, hashPassword = result
 
-    if check_password_hash(hashPassword, password):  # Use check_password_hash here
-        session['user_id'] = userID
-        session['username'] = username
-        dbClose(cur, conn)
-        return redirect("/lab5")
-    else:
-        errors.append("Неправильный логин или пароль")
-        dbClose(cur, conn)
-        return render_template("logins.html", errors=errors)
+            if check_password_hash(hashPassword, password):
+                session['user_id'] = userID
+                session['username'] = username
+                return redirect("/lab5")
+            else:
+                errors.append("Неправильный логин или пароль")
+                return render_template("logins.html", errors=errors)
+
+        except Exception as e:
+            errors.append(f"Ошибка при выполнении запроса: {str(e)}")
+            return render_template("logins.html", errors=errors)
 
 @lab5.route('/lab5/logout')
 def logout():
-    # Очистите данные сессии
     session.pop('user_id', None)
     session.pop('username', None)
+    return redirect("/lab5/logins")
 
-    # Перенаправьте пользователя на главную страницу
+@lab5.route('/lab5/new_article', methods=["GET", "POST"])
+def new_article():
+    if 'user_id' not in session:
+        return redirect('/lab5/logins')
+
+    user_id = session['user_id']
+
+    if not user_has_permission_to_create_article(user_id):
+        return redirect('/lab5')
+
+    sent = False
+
+    if request.method == "GET":
+        return render_template("new_article.html", errors=[], sent=sent)
+    elif request.method == "POST":
+        title = request.form.get("title_article")
+        text_article = request.form.get("text_article")
+
+        if not (title and text_article):
+            errors = ["Пожалуйста, заполните все поля"]
+            return render_template("new_article.html", errors=errors, sent=sent)
+
+        conn = dbConnect()
+        cur = conn.cursor()
+
+        try:
+            cur.execute(
+                "INSERT INTO articles (user_id, title, article_text, is_public) VALUES (%s, %s, %s, %s) RETURNING id;",
+                (user_id, title, text_article, True)
+            )
+            new_article_id = cur.fetchone()[0]
+            conn.commit()
+
+            print(f"Inserted new article with ID: {new_article_id}")
+
+            sent = True
+
+        except Exception as e:
+            errors = [f"Ошибка при выполнении запроса: {str(e)}"]
+            return render_template("new_article.html", errors=errors, sent=sent)
+        finally:
+            dbClose(cur, conn)
+
+        if new_article_id is not None:
+            return render_template("new_article.html", errors=[], sent=sent)
+        else:
+            errors = ["Не удалось получить идентификатор новой статьи"]
+            return render_template("new_article.html", errors=errors, sent=sent)
+
+@lab5.route("/lab5/articles/<int:article_id>")
+def getArticle(article_id):
+    user_id = session.get("user_id")  # Исправлено
+    # Проверяем авторизован ли пользователь
+    if user_id is not None:
+        conn = dbConnect()
+        cur = conn.cursor()
+        # SQL injection example!!!!|
+        cur.execute("SELECT title, article_text FROM articles WHERE id = %s AND user_id = %s", (article_id, user_id))
+        # Возьми одну строку
+        articleBody = cur.fetchone()
+        dbClose(cur, conn)
+        if articleBody is None: 
+            return "Not found!"
+        # Разбиваем строку на массив по "Enter", чтобы
+        # с помощью цикла for в jinja разбить статью на параграфы
+        text = articleBody[1].splitlines()
+        return render_template("articleN.html", article_text=text, article_title=articleBody[0], username=session.get("username"))
+    else:
+        return redirect("/lab5/logins")
+
+# Add this route in your Flask application file
+
+@lab5.route("/lab5/my_articles")
+def my_articles():
+    current_user = {"username": None}  # Corrected assignment
+    if 'user_id' in session:
+        user_id = session['user_id']
+
+        conn = dbConnect()
+        cur = conn.cursor()
+
+        try:
+            # Retrieve articles belonging to the logged-in user
+            cur.execute("SELECT id, title, article_text, likes FROM articles WHERE user_id = %s;", (user_id,))
+            articles = [{'id': row[0], 'title': row[1], 'article_text': row[2], 'likes': row[3]} for row in cur.fetchall()]
+
+            current_user["username"] = session.get("username")  # Set the username for the current user
+
+            return render_template("articles.html", user_is_authenticated=True, articles=articles, current_user=current_user)
+        finally:
+            dbClose(cur, conn)
+    else:
+        # If the user is not authenticated, redirect to the login page
+        return redirect('/lab5/logins')
+
+# Добавьте новый маршрут для добавления статьи в избранное
+@lab5.route('/lab5/articles/<int:article_id>/add_to_favorite')
+def add_to_favorite(article_id):
+    if 'user_id' not in session:
+        return redirect('/lab5/logins')
+
+    user_id = session['user_id']
+
+    conn = dbConnect()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("UPDATE articles SET is_favorite = true WHERE id = %s AND user_id = %s;", (article_id, user_id))
+        conn.commit()
+    finally:
+        dbClose(cur, conn)
+
+    return redirect('/lab5/my_articles')  # Перенаправьте на страницу с избранными статьями
+
+# Добавьте новый маршрут для лайка статьи
+@lab5.route('/lab5/like_article/<int:article_id>')
+def like_article(article_id):
+    if 'user_id' not in session:
+        return redirect('/lab5/logins')
+
+    user_id = session['user_id']
+
+    conn = dbConnect()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("UPDATE articles SET likes = likes + 1 WHERE id = %s;", (article_id,))
+        conn.commit()
+    finally:
+        dbClose(cur, conn)
+
     return redirect('/lab5')
