@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, session
+from flask import Blueprint, render_template, request, redirect, session, flash, url_for
 from Db import db
 from Db.models import users, articles
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -91,12 +91,14 @@ def login():
 @lab6.route("/lab6/articles")
 @login_required
 def articles_list():
+    # Получаем только статьи текущего пользователя
     my_articles = articles.query.filter_by(user_id=current_user.id).all()
     return render_template("list_articles.html", articles=my_articles)
 
 @lab6.route("/lab6/articles/<int:article_id>")
 @login_required
-def article_details(article_id):
+def view_article(article_id):
+
     article = articles.query.get_or_404(article_id)
     return render_template("article_details.html", article=article)
 
@@ -127,3 +129,4 @@ def create_article():
 
     # Ваш текущий код для GET-запроса остается здесь
     return render_template("new_article2.html")
+
