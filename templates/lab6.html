@@ -16,8 +16,10 @@
         </li>
         <li>
             <a href="/lab6/register">Регистрация</a>
-        </li>    
+        </li>
     </ol>
-    <a href="{{ url_for('lab6.logout') }}">Выход</a>
-
+    <p>Добро пожаловать, {{ current_user.username }}!</p>
+    {% if user_is_authenticated %}
+        <a href="{{ url_for('lab6.logout') }}">Выход</a>
+    {% endif %}
 {% endblock %}
