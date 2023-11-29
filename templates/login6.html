@@ -3,7 +3,6 @@
 {% block lab %} Лабораторная работа 6 {% endblock %}
 
 {% block main %}
-<link rel="stylesheet" href="{{ url_for('static', filename='lab5.css')}}">
 <div>
     <div>
     <h2>Пожалуйста, авторизуйтесь</h2>
@@ -22,10 +21,13 @@
             <input class="pole" type="password" id="password" name="password" value="{{ password or '' }}">
         </div>
         <div>
-            <button type="submit">Войти</button>
             <button type="reset">Отмена</button>
+            <button type="submit">Войти</button>
         </div>
+        </a>
     </form>
+    <a href="/lab6">
+        <button >Вернуться назад</button>
     </div>
 </div>
 {% endblock %}
