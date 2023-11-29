@@ -105,3 +105,25 @@ def article_details(article_id):
 def logout():
     logout_user()
     return redirect ("/lab6")
+
+@lab6.route("/lab6/new_article", methods=["GET", "POST"])
+@login_required
+def create_article():
+    if request.method == "POST":
+        title = request.form.get("title_article")
+        text = request.form.get("text_article")
+
+        # Проверка наличия данных
+        if not title or not text:
+            return render_template("new_article2.html", error="Пожалуйста, заполните все поля.")
+
+        new_article = articles(title=title, article_text=text, user_id=current_user.id)
+        db.session.add(new_article)
+        db.session.commit()
+
+        # Установите флаг sent для отображения сообщения об успешной отправке
+        sent = True
+        return render_template("new_article2.html", sent=sent)
+
+    # Ваш текущий код для GET-запроса остается здесь
+    return render_template("new_article2.html")
