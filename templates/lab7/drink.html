@@ -2,40 +2,47 @@
 {% block lab %}Лабораторная работа 7{% endblock %}
 
 {% block script %}
-<script src="{{ url_for('static', filename='lab7/drink.js') }}"></script>
+    <script src="{{ url_for('static', filename='lab7/drink.js') }}"></script>
 {% endblock %}
 
 {% block main %}
     <h1>Заказ напитка</h1>
+
     <div>Напиток:</div>
     <label>
-        <input type="radio" value="coffee" name = "drink" checked>Кофе
+        <input type="radio" value="coffee" name="drink" checked>Кофе
     </label>
     <label>
-        <input type="radio" value="black-tea" name = "drink" checked>Черный чай
+        <input type="radio" value="black-tea" name="drink">Черный чай
     </label>
     <label>
-        <input type="radio" value="green-tea" name = "drink" checked>Зеленый чай
+        <input type="radio" value="green-tea" name="drink">Зеленый чай
     </label>
 
     <div>Добавки:</div>
     <label>
-        <input type="checkbox" name = "milk" checked>Молоко
+        <input type="checkbox" name="milk">Молоко
     </label>
     <label>
-        <input type="checkbox" name = "sugar" checked>Сахар
+        <input type="checkbox" name="sugar">Сахар
     </label>
 
     <div>
-        <button onclick="getPrice()">Рассчитать цену</button>
+        <button id="calculatePrice">Рассчитать цену</button>
     </div>
 
     <div id="price"></div>
 
     <div>
-        <button type="button">Заказать</button>
+        <label for="cardNumber">Номер карты:</label>
+        <input type="text" id="cardNumber" name="cardNumber">
+    </div>
+    <div>
+        <label for="cvv">CVV:</label>
+        <input type="text" id="cvv" name="cvv">
     </div>
 
-
-
+    <div>
+        <button id="placeOrder">Заказать</button>
+    </div>
 {% endblock %}

@@ -1,9 +1,4 @@
-from werkzeug.security import check_password_hash, generate_password_hash
-from flask import Blueprint, render_template, request, make_response, redirect, session
-import psycopg2
-from Db import db
-from Db.models import users, articles
-from flask_login import login_user, login_required, current_user, logout_user
+from flask import Blueprint, render_template, request, abort, jsonify
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -15,13 +10,13 @@ def main():
 def drink():
     return render_template('lab7/drink.html')
 
-@lab7.route('/lab7/api', methods = ['POST'])
+@lab7.route('/lab7/api', methods=['POST'])
 def api():
     data = request.json
     
     if data['method'] == 'get-price':
         return get_price(data['params'])
-    if data['method'] == 'pay':
+    elif data['method'] == 'pay':
         return pay(data['params'])
     
     abort(400)
@@ -49,13 +44,35 @@ def calculate_price(params):
     return price
     
 def pay(params):
-    card_num = params['card_num']
-    if len(card_num) != 16 or not card_num.isdigit():
-        return {"result": None, "error": "Неверный номер карты"}
+    drink = params.get('drink')
+    milk = params.get('milk')
+    sugar = params.get('sugar')
+    card_num = params.get('card_num')
+    cvv = params.get('cvv')
+
+    # Добавьте проверки на корректность данных здесь
+
+    obj = {
+        "method": "pay",
+        "params": {
+            "drink": drink,
+            "milk": milk,
+            "sugar": sugar,
+            "card_num": card_num,
+            "cvv": cvv
+        }
+    }
+
+    response = fetch_data('/lab7/api', obj)
     
-    cvv = params['cvv']
-    if len(cvv) != 3 or not card_num.isdigit():
-        return {"result": None, "error": "Неверный номер CVV/CVC"}
-    
-    price = calculate_price(params)
-    return {"result": f'С карты {card_num} списано {price} руб.', "error": None}
+    if response.get('result'):
+        return jsonify({"result": f'С карты {card_num} списано {response["result"]} руб.'})
+    else:
+        return jsonify({"error": response.get('error', 'Произошла ошибка при обработке заказа')})
+
+def fetch_data(url, data):
+    response = fetch(url, data)
+    return response.json() if response else {"error": "Произошла ошибка при отправке запроса"}
+
+def fetch(url, data):
+    return requests.post(url, json=data, headers={'Content-Type': 'application/json'})
