@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('click', function(event) {
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (event) {
         if (event.target.id === 'calculatePrice') {
             getPrice();
         } else if (event.target.id === 'placeOrder') {
@@ -16,24 +16,22 @@ function getPrice() {
     const obj = {
         "method": "get-price",
         "params": {
-            drink: drink,
-            milk: milk,
-            sugar: sugar
+            drink,
+            milk,
+            sugar
         }
-    }
+    };
 
     fetch('/lab7/api', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(obj)
     })
-    .then(function(response) {
-        return response.json();  
-    })
-    .then(function(data) {
+    .then(response => response.json())
+    .then(data => {
         document.querySelector('#price').innerHTML = `Цена напитка: ${data.result} руб.`;
     })
-    .catch(function(error) {
+    .catch(error => {
         console.error('Ошибка при обращении к API:', error);
     });
 }
@@ -45,37 +43,35 @@ function pay() {
     const cardNumber = document.getElementById('cardNumber').value;
     const cvv = document.getElementById('cvv').value;
 
-    console.log('Payment details:', { drink, milk, sugar, cardNumber, cvv }); // Debugging
+    console.log('Payment details:', { drink, milk, sugar, cardNumber, cvv });
 
     const obj = {
         "method": "pay",
         "params": {
-            drink: drink,
-            milk: milk,
-            sugar: sugar,
-            cardNumber: cardNumber,
-            cvv: cvv
+            drink,
+            milk,
+            sugar,
+            cardNumber,
+            cvv
         }
-    }
+    };
 
     fetch('/lab7/api', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(obj)
     })
-    .then(function(response) {
-        return response.json();  
-    })
-    .then(function(data) {
-        console.log('Payment response:', data); // Debugging
+    .then(response => response.json())
+    .then(data => {
+        console.log('Payment response:', data);
 
-        if (data.success) {
-            alert(`Списание успешно: ${data.message}`);
+        if (data.result) {
+            alert(`Списание успешно: ${data.result}`);
         } else {
             alert(`Ошибка: ${data.error}`);
         }
     })
-    .catch(function(error) {
+    .catch(error => {
         console.error('Ошибка при обращении к API:', error);
     });
 }

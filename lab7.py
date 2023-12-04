@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, abort, jsonify
+import requests
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -50,8 +51,6 @@ def pay(params):
     card_num = params.get('card_num')
     cvv = params.get('cvv')
 
-    # Добавьте проверки на корректность данных здесь
-
     obj = {
         "method": "pay",
         "params": {
@@ -63,16 +62,22 @@ def pay(params):
         }
     }
 
-    response = fetch_data('/lab7/api', obj)
-    
-    if response.get('result'):
-        return jsonify({"result": f'С карты {card_num} списано {response["result"]} руб.'})
-    else:
-        return jsonify({"error": response.get('error', 'Произошла ошибка при обработке заказа')})
+    try:
+        response = fetch_data('/lab7/api', obj)
+        
+        if response.get('result'):
+            return jsonify({"result": f'С карты {card_num} списано {response["result"]} руб.'})
+        else:
+            return jsonify({"error": response.get('error', 'Произошла ошибка при обработке заказа')})
+    except Exception as e:
+        # Добавим вывод ошибки на сервере Flask
+        print(f"Exception: {e}")
+        return jsonify({"error": "Произошла внутренняя ошибка при обработке запроса"}), 500
 
 def fetch_data(url, data):
-    response = fetch(url, data)
+    response = fetch(f'http://127.0.0.1:5000{url}', data)  # Используйте полный адрес сервера
     return response.json() if response else {"error": "Произошла ошибка при отправке запроса"}
+
 
 def fetch(url, data):
     return requests.post(url, json=data, headers={'Content-Type': 'application/json'})
