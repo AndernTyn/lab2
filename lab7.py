@@ -1,29 +1,30 @@
-from flask import Blueprint, render_template, request, abort, jsonify
-import requests
+from flask import Blueprint,render_template, request, redirect, session, abort
 
 lab7 = Blueprint('lab7', __name__)
 
-@lab7.route('/lab7')
+@lab7.route('/lab7/')
 def main():
     return render_template('lab7/index.html')
+
 
 @lab7.route('/lab7/drink')
 def drink():
     return render_template('lab7/drink.html')
 
-@lab7.route('/lab7/api', methods=['POST'])
+@lab7.route('/lab7/api', methods = ['POST'])
 def api():
     data = request.json
-    
+
     if data['method'] == 'get-price':
         return get_price(data['params'])
-    elif data['method'] == 'pay':
+    
+    if data['method'] == 'pay':
         return pay(data['params'])
     
     abort(400)
 
 def get_price(params):
-    return {"result": calculate_price(params), "error": None}
+    return {"result": calculate_price(params), "errors": None}
 
 def calculate_price(params):
     drink = params['drink']
@@ -36,48 +37,48 @@ def calculate_price(params):
         price = 80
     else:
         price = 70
-    
+
     if milk:
         price += 30
     if sugar:
         price += 10
 
     return price
-    
+
 def pay(params):
-    drink = params.get('drink')
-    milk = params.get('milk')
-    sugar = params.get('sugar')
-    card_num = params.get('card_num')
-    cvv = params.get('cvv')
-
-    obj = {
-        "method": "pay",
-        "params": {
-            "drink": drink,
-            "milk": milk,
-            "sugar": sugar,
-            "card_num": card_num,
-            "cvv": cvv
-        }
-    }
-
-    try:
-        response = fetch_data('/lab7/api', obj)
-        
-        if response.get('result'):
-            return jsonify({"result": f'С карты {card_num} списано {response["result"]} руб.'})
-        else:
-            return jsonify({"error": response.get('error', 'Произошла ошибка при обработке заказа')})
-    except Exception as e:
-        # Добавим вывод ошибки на сервере Flask
-        print(f"Exception: {e}")
-        return jsonify({"error": "Произошла внутренняя ошибка при обработке запроса"}), 500
-
-def fetch_data(url, data):
-    response = fetch(f'http://127.0.0.1:5000{url}', data)  # Используйте полный адрес сервера
-    return response.json() if response else {"error": "Произошла ошибка при отправке запроса"}
+    card_num = params['card_num']
+    if len(card_num) != 16 or not card_num.isdigit():
+        return{"result":None, "error": "Неверный номер карты"}
+    
+    cvv = params['cvv']
+    if len(cvv) != 3 or not cvv.isdigit():
+        return{"result":None, "error": "Неверный номер CVV/CVC"}
+    
+    price = calculate_price(params)
+    return{"result": f'С карты {card_num} списано {price} руб', "error": None}
 
 
-def fetch(url, data):
-    return requests.post(url, json=data, headers={'Content-Type': 'application/json'})
+@lab7.route('/lab7/refund', methods=['POST'])
+def refund():
+    data = request.json
+
+    card_num = data['params']['card_num']
+    cvv = data['params']['cvv']
+    drink = data['params']['drink']
+    milk = data['params']['milk']
+    sugar = data['params']['sugar']
+
+    if not is_valid_card(card_num):
+        return {"result": None, "error": "Неверный номер карты"}
+
+    if not is_valid_cvv(cvv):
+        return {"result": None, "error": "Неверный номер CVV/CVC"}
+
+    refund_amount = calculate_price(data['params'])
+    return {"result": f'Деньги вернулись на карту: {refund_amount} руб', "error": None}
+
+def is_valid_card(card_num):
+    return len(card_num) == 16 and card_num.isdigit()
+
+def is_valid_cvv(cvv):
+    return len(cvv) == 3 and cvv.isdigit()

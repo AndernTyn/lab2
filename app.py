@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template, session
+from flask import Flask, redirect, url_for, render_template, session, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
@@ -10,7 +10,7 @@ from lab5 import lab5
 from lab6 import lab6
 from lab7 import lab7
 from Db import db
-from Db.models import users
+from Db.models import users, articles
 
 app = Flask(__name__)
 
@@ -43,3 +43,4 @@ app.register_blueprint(lab7)
 
 if __name__ == "__main__":
     app.run(debug=True)
+    

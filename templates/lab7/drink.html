@@ -1,14 +1,18 @@
-{% extends "base.html" %}
-{% block lab %}Лабораторная работа 7{% endblock %}
+{%extends "base.html"%}
+
+{% block lab %}
+    Лабораторная работа 7
+{% endblock %}
 
 {% block script %}
-    <script src="{{ url_for('static', filename='lab7/drink.js') }}"></script>
+    <script src="{{url_for('static', filename='lab7/drink.js')}}"></script>
 {% endblock %}
 
 {% block main %}
     <h1>Заказ напитка</h1>
 
     <div>Напиток:</div>
+
     <label>
         <input type="radio" value="coffee" name="drink" checked>Кофе
     </label>
@@ -16,34 +20,45 @@
         <input type="radio" value="black-tea" name="drink">Черный чай
     </label>
     <label>
-        <input type="radio" value="green-tea" name="drink">Зеленый чай
+        <input type="radio" value="green-tea" name="drink" checked>Зеленый чай
     </label>
 
     <div>Добавки:</div>
+
     <label>
-        <input type="checkbox" name="milk">Молоко
+        <input type="checkbox" name="milk">молоко
     </label>
     <label>
-        <input type="checkbox" name="sugar">Сахар
+        <input type="checkbox" name="sugar">сахар
     </label>
 
     <div>
-        <button id="calculatePrice">Рассчитать цену</button>
+        <button onclick="get_price()">Заказать</button>
     </div>
 
     <div id="price"></div>
 
-    <div>
-        <label for="cardNumber">Номер карты:</label>
-        <input type="text" id="cardNumber" name="cardNumber">
-    </div>
-    <div>
-        <label for="cvv">CVV:</label>
-        <input type="text" id="cvv" name="cvv">
-    </div>
+    <div id="pay" style="display: none;">
+        <div>Номер банковской карты:</div>
+        <label>
+            <input type="text" name="card">
+        </label>
 
-    <div>
-        <button id="placeOrder">Заказать</button>
+        <div>Имя держателя карты:</div>
+        <label>
+            <input type="text" name="name">
+        </label>
+
+        <div>Номер CVV:</div>
+        <label>
+            <input type="text" name="cvv" size="3">
+        </label>
+
+        <div>
+            <button onclick="pay()">Оплатить</button>
+        </div>
+        <div>
+            <button id="refund" onclick="refund()" style="display: none;">Отменить оплату</button>
+        </div>
     </div>
-    <div id="orderInfo"></div>
 {% endblock %}
