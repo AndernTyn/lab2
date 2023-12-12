@@ -29,22 +29,22 @@ def del_course(course_num):
     if 0 <= course_num < len(courses):
         del courses[course_num]
         return '', 204
-    else:
-        abort(404)
 
 @lab8.route('/lab8/api/courses/<int:course_num>', methods=['PUT'])
 def put_course(course_num):
     if 0 <= course_num < len(courses):
         course = request.get_json()
-        course['createdAt'] = courses[course_num]['createdAt']
-        courses[course_num] = course
+        courses[course_num]['name'] = course.get('name', courses[course_num]['name'])
+        courses[course_num]['videos'] = course.get('videos', courses[course_num]['videos'])
+        courses[course_num]['price'] = course.get('price', None)  # Set price to None if not provided
         return jsonify(courses[course_num])
     else:
         abort(404)
 
 @lab8.route('/lab8/api/courses/', methods=['POST'])
-def add_courses():
+def add_course():
     course = request.get_json()
     course['createdAt'] = datetime.now()
+    course['price'] = course.get('price', None)  # Set price to None if not provided
     courses.append(course)
     return {"num": len(courses)-1}
