@@ -46,14 +46,18 @@ function fillCourseList() {
         }
     })
 }
-
 function deleteCourse(num) {
-    if(! confirm('Вы точно хотите удалить курс?'))
+    if (!confirm('Вы точно хотите удалить курс?')) {
         return;
-    fetch('/lab8/api/courses/${num}', {method:'DELETE'})
-    .then(function() {
-        fillCourseList();
-    });
+    }
+
+    fetch('/lab8/api/courses/' + num, { method: 'DELETE' })
+        .then(function () {
+            fillCourseList();
+        })
+        .catch(function (error) {
+            console.error('Ошибка при удалении курса:', error);
+        });
 }
 
 function showModal() {
