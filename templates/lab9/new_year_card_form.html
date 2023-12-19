@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма для открытки</title>
+</head>
+<body>
+    <h1>Форма для открытки</h1>
+    <form method="post" action="{{ url_for('lab9.new_year_card') }}">
+        <label for="recipient_name">Имя получателя:</label>
+        <input type="text" name="recipient_name" required><br>
+
+        <label for="recipient_gender">Пол получателя:</label>
+        <select name="recipient_gender" required>
+            <option value="male">Мужской</option>
+            <option value="female">Женский</option>
+        </select><br>
+
+        <label for="sender_name">Имя отправителя:</label>
+        <input type="text" name="sender_name" required><br>
+
+        <button type="submit">Создать открытку</button>
+    </form>
+</body>
+</html>
